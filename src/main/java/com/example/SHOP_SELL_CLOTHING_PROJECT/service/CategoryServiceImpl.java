@@ -8,17 +8,22 @@ package com.example.SHOP_SELL_CLOTHING_PROJECT.service;
 
 import com.example.SHOP_SELL_CLOTHING_PROJECT.ENUM.ResponseType;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.IService.CategoryService;
+import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.APIResponseDTO;
+import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.CategoryDTO;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.APIResponse;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.repository.CategoryRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.transaction.Transactional;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @ 2025. All rights reserved
@@ -31,46 +36,129 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private APIResponseServiceImpl apiResponseServiceImpl;
+
     @Override
-    public APIResponse<String> createCategory(Category category) throws JsonProcessingException {
+    public APIResponse<String> createCategory(CategoryDTO categoryDTO) throws JsonProcessingException {
         Map<String, Object> result = categoryRepository.createCategory(
+                categoryDTO.getCategoriesName(),
+                categoryDTO.getDescription(),
+                categoryDTO.getParentId()
+        );
+
+        int code = (Integer) result.get("CODE");
+        int categoryId = result.get("CATEGORY_ID") == null ? -1 : (Integer) result.get("CATEGORY_ID");
+
+        APIResponse<String> apiResponse = apiResponseServiceImpl.getAPIResponseByCode(code);
+        APIResponseDTO apiResponseDTO = apiResponse != null ? objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) : new APIResponseDTO();
+
+        return new APIResponse<>(code, apiResponseDTO.getMessage(), objectMapper.writeValueAsString(categoryId), apiResponseDTO.getResponseType());
+    }
+
+    @Override
+    public APIResponse<String> updateCategory(Integer categoryId, Category category) throws JsonProcessingException {
+        Map<String, Object> result = categoryRepository.updateCategory(
+                categoryId,
                 category.getCategoriesName(),
                 category.getDescription(),
                 category.getParent() != null ? category.getParent().getCategoryId() : null
         );
 
         int code = (Integer) result.get("CODE");
-        int categoryId = result.get("CATEGORY_ID") == null ? -1 : (Integer) result.get("CATEGORY_ID");
 
-        if (code == 0)
-            return new APIResponse<>(code, "", objectMapper.writeValueAsString(categoryId), ResponseType.SUCCESS);
-        else
-            return new APIResponse<>(code, "", objectMapper.writeValueAsString(categoryId), ResponseType.ERROR);
-    }
+        APIResponse<String> apiResponse = apiResponseServiceImpl.getAPIResponseByCode(code);
+        APIResponseDTO apiResponseDTO = apiResponse != null ? 
+                objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) : 
+                new APIResponseDTO();
 
-    @Override
-    public void updateCategory(Category category) {
-        categoryRepository.updateCategory(
-                category.getCategoryId(),
-                category.getCategoriesName(),
-                category.getDescription(),
-                category.getParent() != null ? category.getParent().getCategoryId() : null
+        return new APIResponse<>(code, apiResponseDTO.getMessage(),null, apiResponseDTO.getResponseType()
         );
     }
 
     @Override
-    public void deleteCategory(Integer categoryId) {
-        categoryRepository.deleteCategory(categoryId);
+    public APIResponse<String> deleteCategory(Integer categoryId) throws JsonProcessingException {
+        Map<String, Object> result = categoryRepository.deleteCategory(categoryId);
+        
+        int code = (Integer) result.get("CODE");
+    
+        APIResponse<String> apiResponse = apiResponseServiceImpl.getAPIResponseByCode(code);
+        APIResponseDTO apiResponseDTO = apiResponse != null ? 
+                objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) : 
+                new APIResponseDTO();
+    
+        return new APIResponse<>(code, apiResponseDTO.getMessage(), null, apiResponseDTO.getResponseType()
+        );
     }
 
     @Override
-    public List<Category> getAllCategories() {
-        return categoryRepository.getAllCategories();
+    public APIResponse<String> getAllCategories() throws JsonProcessingException {
+        Map<String, Object> result = categoryRepository.getAllCategories();
+    
+        int code = (Integer) result.get("CODE");
+        List<Category> categories = (List<Category>) result.get("CATEGORIES");
+    
+        if (code == 0 && categories != null) {
+            // Configure ObjectMapper to handle bidirectional relationships
+            objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            
+            // Create a custom view of categories for serialization
+            List<Map<String, Object>> categoryDTOs = categories.stream()
+                .map(category -> {
+                    Map<String, Object> dto = new HashMap<>();
+                    dto.put("categoryId", category.getCategoryId());
+                    dto.put("categoriesName", category.getCategoriesName());
+                    dto.put("description", category.getDescription());
+                    dto.put("parentId", category.getParent() != null ? category.getParent().getCategoryId() : null);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    
+            return new APIResponse<>(
+                code,
+                "Categories retrieved successfully",
+                objectMapper.writeValueAsString(categoryDTOs),
+                ResponseType.SUCCESS
+            );
+        } else {
+            APIResponse<String> apiResponse = apiResponseServiceImpl.getAPIResponseByCode(code);
+            APIResponseDTO apiResponseDTO = apiResponse != null ? 
+                    objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) : 
+                    new APIResponseDTO();
+    
+            return new APIResponse<>(
+                code,
+                apiResponseDTO.getMessage(),
+                null,
+                apiResponseDTO.getResponseType()
+            );
+        }
     }
 
     @Override
-    public Category getCategoryById(Integer categoryId) {
-        return categoryRepository.getCategoryById(categoryId);
+    public APIResponse<String> getCategoryById(Integer categoryId) throws JsonProcessingException {
+        Map<String, Object> result = categoryRepository.getCategoryById(categoryId);
+        
+        int code = (Integer) result.get("CODE");
+        Category category = (Category) result.get("CATEGORY");
+    
+        if (code == 0 && category != null) {
+            return new APIResponse<>(
+                code,
+                "Category retrieved successfully",
+                objectMapper.writeValueAsString(category),
+                ResponseType.SUCCESS
+            );
+        } else {
+            APIResponse<String> apiResponse = apiResponseServiceImpl.getAPIResponseByCode(code);
+            APIResponseDTO apiResponseDTO = apiResponse != null ? 
+                    objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) : 
+                    new APIResponseDTO();
+    
+            return new APIResponse<>(code, apiResponseDTO.getMessage(), null, apiResponseDTO.getResponseType()
+            );
+        }
     }
 
     @Override

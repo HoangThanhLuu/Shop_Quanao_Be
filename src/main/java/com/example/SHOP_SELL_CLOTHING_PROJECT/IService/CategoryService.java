@@ -6,6 +6,7 @@ package com.example.SHOP_SELL_CLOTHING_PROJECT.IService;
  * Time: 11:46 PM
  */
 
+import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.CategoryDTO;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.APIResponse;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.Category;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,11 +18,11 @@ import java.util.List;
  */
 
 public interface CategoryService {
-    APIResponse<String> createCategory(Category category) throws JsonProcessingException;
-    void updateCategory(Category category);
-    void deleteCategory(Integer categoryId);
-    List<Category> getAllCategories();
-    Category getCategoryById(Integer categoryId);
+    APIResponse<String> createCategory(CategoryDTO categoryDTO) throws JsonProcessingException;
+    APIResponse<String> updateCategory(Integer categoryId, Category category) throws JsonProcessingException;
+    APIResponse<String> deleteCategory(Integer categoryId) throws JsonProcessingException;
+    APIResponse<String> getAllCategories() throws JsonProcessingException;
+    APIResponse<String> getCategoryById(Integer categoryId) throws JsonProcessingException;
     List<Category> getRootCategories();
     List<Category> getSubCategories(Integer parentId);
 }

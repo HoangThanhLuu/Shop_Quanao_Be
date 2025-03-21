@@ -22,11 +22,10 @@ import java.util.List;
 @AllArgsConstructor
 public class CategoryDTO {
     private Integer categoryId;
-
     @NotBlank(message = "Category name is required")
     private String categoriesName;
-
     private String description;
     private Integer parentId;
     private List<CategoryDTO> subCategories;
+    private List<ProductDTO> products;
 }

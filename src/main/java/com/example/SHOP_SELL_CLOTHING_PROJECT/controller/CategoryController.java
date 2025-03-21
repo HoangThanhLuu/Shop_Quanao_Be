@@ -33,36 +33,35 @@ public class CategoryController {
 
     @PostMapping("/")
     public ResponseEntity<APIResponse<String>> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) throws JsonProcessingException {
-        Category category = convertToCategory(categoryDTO);
-        APIResponse<String> resultData = categoryService.createCategory(category);
+        APIResponse<String> resultData = categoryService.createCategory(categoryDTO);
         return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<Void>> updateCategory(
+    public ResponseEntity<APIResponse<String>> updateCategory(
             @PathVariable Integer id,
-            @Valid @RequestBody CategoryDTO categoryDTO) {
+            @Valid @RequestBody CategoryDTO categoryDTO) throws JsonProcessingException {
         Category category = convertToCategory(categoryDTO);
-        categoryService.updateCategory(category);
-        return ResponseEntity.ok(new APIResponse<>(6, "Category updated successfully", null));
+        APIResponse<String> resultData = categoryService.updateCategory(id, category);
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<APIResponse<Void>> deleteCategory(@PathVariable Integer id) {
-        categoryService.deleteCategory(id);
-        return ResponseEntity.ok(new APIResponse<>(7, "Category deleted successfully", null));
+    public ResponseEntity<APIResponse<String>> deleteCategory(@PathVariable Integer id) throws JsonProcessingException {
+        APIResponse<String> resultData = categoryService.deleteCategory(id);
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
-    @GetMapping
-    public ResponseEntity<APIResponse<List<Category>>> getAllCategories() {
-        List<Category> categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(new APIResponse<>(8, "Categories retrieved successfully", categories));
+    @GetMapping("/")
+    public ResponseEntity<APIResponse<String>> getAllCategories() throws JsonProcessingException {
+        APIResponse<String> resultData = categoryService.getAllCategories();
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<APIResponse<Category>> getCategoryById(@PathVariable Integer id) {
-        Category category = categoryService.getCategoryById(id);
-        return ResponseEntity.ok(new APIResponse<>(9, "Category retrieved successfully", category));
+    public ResponseEntity<APIResponse<String>> getCategoryById(@PathVariable Integer id) throws JsonProcessingException {
+        APIResponse<String> resultData = categoryService.getCategoryById(id);
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
     @GetMapping("/root")
@@ -88,19 +87,5 @@ public class CategoryController {
             category.setParent(parent);
         }
         return category;
-    }
-
-    private CategoryDTO convertToCategoryDTO(Category category) {
-        return new CategoryDTO(
-                category.getCategoryId(),
-                category.getCategoriesName(),
-                category.getDescription(),
-                category.getParent() != null ? category.getParent().getCategoryId() : null,
-                category.getSubCategories() != null ?
-                        category.getSubCategories().stream()
-                                .map(this::convertToCategoryDTO)
-                                .collect(Collectors.toList()) :
-                        null
-        );
     }
 }
