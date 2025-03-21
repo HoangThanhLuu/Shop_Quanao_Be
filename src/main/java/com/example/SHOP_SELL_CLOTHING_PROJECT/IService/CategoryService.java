@@ -23,6 +23,6 @@ public interface CategoryService {
     APIResponse<String> deleteCategory(Integer categoryId) throws JsonProcessingException;
     APIResponse<String> getAllCategories() throws JsonProcessingException;
     APIResponse<String> getCategoryById(Integer categoryId) throws JsonProcessingException;
-    List<Category> getRootCategories();
-    List<Category> getSubCategories(Integer parentId);
+    APIResponse<String> getRootCategories() throws JsonProcessingException;
+    APIResponse<String> getSubCategories(Integer parentId) throws JsonProcessingException;
 }

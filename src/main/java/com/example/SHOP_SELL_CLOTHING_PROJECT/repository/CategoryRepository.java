@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -281,33 +282,95 @@ public class CategoryRepository {
         return null;
     }
 
-    public List<Category> getRootCategories() {
+    public Map<String, Object> getRootCategories() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        Map<String, Object> result = new HashMap<>();
+        
         try {
-            entityManager.getTransaction().begin();
+            transaction.begin();
+            
             StoredProcedureQuery query = entityManager
-                    .createStoredProcedureQuery("SP_CATEGORIES_ROOT_GET", Category.class);
+                    .createStoredProcedureQuery("SP_CATEGORIES_ROOT_GET")
+                    .registerStoredProcedureParameter("p_CODE", Integer.class, ParameterMode.OUT);
+    
+            List<?> results = query.getResultList();
+            Integer code = (Integer) query.getOutputParameterValue("p_CODE");
 
-            return query.getResultList();
+            List<CategoryDTO> rootCategories = getCategories(results);
+
+            result.put("CODE", code);
+            result.put("ROOT_CATEGORIES", rootCategories);
+            
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            result.put("CODE", 1);
+            result.put("ERROR", e.getMessage());
+            log.error("[CHECK CATEGORY REPOSITORY] Get Root Categories. ERROR: ", e);
         } finally {
-            entityManager.getTransaction().commit();
-            entityManager.close();
+            if (entityManager.isOpen()) {
+                entityManager.close();
+            }
         }
+        
+        return result;
     }
 
-    public List<Category> getSubCategories(Integer parentId) {
+    private static List<CategoryDTO> getCategories(List<?> results) {
+        List<CategoryDTO> rootCategories = new ArrayList<>();
+        if (results != null && !results.isEmpty()) {
+            for (Object object : results) {
+                Object[] row = (Object[]) object;
+
+                CategoryDTO categoryDTO = new CategoryDTO();
+                categoryDTO.setCategoryId((Integer) row[0]);
+                categoryDTO.setCategoriesName((String) row[1]);
+                categoryDTO.setDescription((String) row[2]);
+                rootCategories.add(categoryDTO);
+            }
+        }
+        return rootCategories;
+    }
+
+    public Map<String, Object> getSubCategories(Integer parentId) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        Map<String, Object> result = new HashMap<>();
+        
         try {
-            entityManager.getTransaction().begin();
+            transaction.begin();
+            
             StoredProcedureQuery query = entityManager
-                    .createStoredProcedureQuery("SP_CATEGORIES_CHILDREN_GET", Category.class)
+                    .createStoredProcedureQuery("SP_CATEGORIES_CHILDREN_GET")
                     .registerStoredProcedureParameter("p_PARENT_ID", Integer.class, ParameterMode.IN)
+                    .registerStoredProcedureParameter("p_CODE", Integer.class, ParameterMode.OUT)
                     .setParameter("p_PARENT_ID", parentId);
 
-            return query.getResultList();
+            List<?> results = query.getResultList();
+            Integer code = (Integer) query.getOutputParameterValue("p_CODE");
+            
+            List<CategoryDTO> subCategories = getCategories(results);
+            
+            result.put("CODE", code);
+            result.put("SUB_CATEGORIES", subCategories);
+            
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            result.put("CODE", 1);
+            result.put("ERROR", e.getMessage());
+            log.error("[CHECK CATEGORY REPOSITORY] Get Sub Categories. ERROR: ", e);
         } finally {
-            entityManager.getTransaction().commit();
-            entityManager.close();
+            if (entityManager.isOpen()) {
+                entityManager.close();
+            }
         }
+        
+        return result;
     }
 }

@@ -162,12 +162,59 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getRootCategories() {
-        return categoryRepository.getRootCategories();
+    public APIResponse<String> getRootCategories() throws JsonProcessingException {
+        Map<String, Object> result = categoryRepository.getRootCategories();
+        
+        int code = (Integer) result.get("CODE");
+
+        List<CategoryDTO> rootCategories = null;
+        if (result.get("ROOT_CATEGORIES") != null)
+            rootCategories = (List<CategoryDTO>) result.get("ROOT_CATEGORIES");
+    
+        if (code == 0 && rootCategories != null) {
+            return new APIResponse<>(
+                code,
+                "Root categories retrieved successfully",
+                objectMapper.writeValueAsString(rootCategories),
+                ResponseType.SUCCESS
+            );
+        } else {
+            APIResponse<String> apiResponse = apiResponseServiceImpl.getAPIResponseByCode(code);
+            APIResponseDTO apiResponseDTO = apiResponse != null ? 
+                    objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) : 
+                    new APIResponseDTO();
+    
+            return new APIResponse<>(code, apiResponseDTO.getMessage(), null, apiResponseDTO.getResponseType()
+            );
+        }
     }
 
     @Override
-    public List<Category> getSubCategories(Integer parentId) {
-        return categoryRepository.getSubCategories(parentId);
+    public APIResponse<String> getSubCategories(Integer parentId) throws JsonProcessingException {
+        Map<String, Object> result = categoryRepository.getSubCategories(parentId);
+        
+        int code = (Integer) result.get("CODE");
+        
+        List<CategoryDTO> subCategories = null;
+        if (result.get("SUB_CATEGORIES") != null) {
+            subCategories = (List<CategoryDTO>) result.get("SUB_CATEGORIES");
+        }
+    
+        if (code == 0 && subCategories != null) {
+            return new APIResponse<>(
+                code,
+                "Sub categories retrieved successfully",
+                objectMapper.writeValueAsString(subCategories),
+                ResponseType.SUCCESS
+            );
+        } else {
+            APIResponse<String> apiResponse = apiResponseServiceImpl.getAPIResponseByCode(code);
+            APIResponseDTO apiResponseDTO = apiResponse != null ? 
+                    objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) : 
+                    new APIResponseDTO();
+    
+            return new APIResponse<>(code, apiResponseDTO.getMessage(), null, apiResponseDTO.getResponseType()
+            );
+        }
     }
 }

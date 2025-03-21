@@ -65,15 +65,15 @@ public class CategoryController {
     }
 
     @GetMapping("/root")
-    public ResponseEntity<APIResponse<List<Category>>> getRootCategories() {
-        List<Category> rootCategories = categoryService.getRootCategories();
-        return ResponseEntity.ok(new APIResponse<>(10, "Root categories retrieved successfully", rootCategories));
+    public ResponseEntity<APIResponse<String>> getRootCategories() throws JsonProcessingException {
+        APIResponse<String> resultData = categoryService.getRootCategories();
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
     @GetMapping("/{id}/children")
-    public ResponseEntity<APIResponse<List<Category>>> getChildCategories(@PathVariable Integer id) {
-        List<Category> childCategories = categoryService.getSubCategories(id);
-        return ResponseEntity.ok(new APIResponse<>(11, "Child categories retrieved successfully", childCategories));
+    public ResponseEntity<APIResponse<String>> getChildCategories(@PathVariable Integer id) throws JsonProcessingException {
+        APIResponse<String> resultData = categoryService.getSubCategories(id);
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
     private Category convertToCategory(CategoryDTO dto) {
