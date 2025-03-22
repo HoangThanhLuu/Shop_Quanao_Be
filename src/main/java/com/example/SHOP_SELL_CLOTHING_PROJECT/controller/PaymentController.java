@@ -6,15 +6,12 @@ package com.example.SHOP_SELL_CLOTHING_PROJECT.controller;
  * Time: 11:50 AM
  */
 
-import com.example.SHOP_SELL_CLOTHING_PROJECT.ENUM.OrderStatus;
-import com.example.SHOP_SELL_CLOTHING_PROJECT.ENUM.PaymentMethod;
-import com.example.SHOP_SELL_CLOTHING_PROJECT.ENUM.PaymentStatus;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.IService.OrderService;
+import com.example.SHOP_SELL_CLOTHING_PROJECT.IService.PaymentService;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.IService.ProductService;
-import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.*;
+import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.OrderDTO;
+import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.PaymentDTO;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.APIResponse;
-import com.example.SHOP_SELL_CLOTHING_PROJECT.model.Order;
-import com.example.SHOP_SELL_CLOTHING_PROJECT.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +19,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-
 /**
  * @ 2025. All rights reserved
  */
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/payments")
 @Validated
-public class OrderController {
+public class PaymentController {
     @Autowired
-    private OrderService orderService;
+    private PaymentService paymentService;
 
-    @PostMapping("/{userId}/create-order")
-    public ResponseEntity<APIResponse<String>> createOrder(@PathVariable Integer userId, @Valid @RequestBody OrderDTO orderDTO) throws JsonProcessingException {
-        APIResponse<String> resultData = orderService.createOrder(userId, orderDTO);
+    @PostMapping("/{orderId}/payment")
+    public ResponseEntity<APIResponse<String>> processPayment(@PathVariable Integer orderId, @Valid @RequestBody PaymentDTO paymentDTO) throws JsonProcessingException {
+        APIResponse<String> resultData =paymentService.paymentProcess(orderId, paymentDTO);
         return ResponseEntity.ok(resultData);
     }
 }
