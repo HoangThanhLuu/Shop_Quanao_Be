@@ -64,12 +64,14 @@ public class CategoryController {
         return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
+//    Pending
     @GetMapping("/root")
     public ResponseEntity<APIResponse<String>> getRootCategories() throws JsonProcessingException {
         APIResponse<String> resultData = categoryService.getRootCategories();
         return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
+//    Pending
     @GetMapping("/{id}/children")
     public ResponseEntity<APIResponse<String>> getChildCategories(@PathVariable Integer id) throws JsonProcessingException {
         APIResponse<String> resultData = categoryService.getSubCategories(id);

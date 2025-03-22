@@ -6,7 +6,10 @@ package com.example.SHOP_SELL_CLOTHING_PROJECT.IService;
  * Time: 11:25 PM
  */
 
+import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.CartDTO;
+import com.example.SHOP_SELL_CLOTHING_PROJECT.model.APIResponse;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.CartItem;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;
 
@@ -15,7 +18,7 @@ import java.util.List;
  */
 
 public interface CartService {
-    void addItemToCart(Integer userId, Integer productId, Integer variantId, Integer quantity);
-    void removeItemFromCart(Integer cartItemId);
-    List<CartItem> getCartItems(Integer userId);
+    APIResponse<String> addItemToCart(Integer userId, CartDTO cartDTO) throws JsonProcessingException;
+    APIResponse<String> removeItemFromCart(Integer cartItemId) throws JsonProcessingException;
+    APIResponse<String> getCartItems(Integer userId) throws JsonProcessingException;
 }

@@ -69,6 +69,7 @@ public class ProductController {
         return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
+//    Pending
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<String>> updateProduct(
             @PathVariable Integer id,
@@ -79,6 +80,7 @@ public class ProductController {
         return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
+//    Pending
     @PutMapping("/{id}/status")
     public ResponseEntity<APIResponse<String>> updateProductStatus(
             @PathVariable Integer id,
