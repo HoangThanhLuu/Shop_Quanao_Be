@@ -6,6 +6,7 @@ package com.example.SHOP_SELL_CLOTHING_PROJECT.dto;
  * Time: 11:35 AM
  */
 
+import com.example.SHOP_SELL_CLOTHING_PROJECT.ENUM.ProductStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -39,7 +40,7 @@ public class ProductDTO {
     private Integer categoryID;
     private String categoryName;
     private Integer stockQuantity;
-    private String productStatus;
+    private ProductStatus productStatus;
 
     @Valid
     private List<ProductVariantDTO> variants;

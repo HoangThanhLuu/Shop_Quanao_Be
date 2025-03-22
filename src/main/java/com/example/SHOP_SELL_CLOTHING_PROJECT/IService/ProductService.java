@@ -7,7 +7,9 @@ package com.example.SHOP_SELL_CLOTHING_PROJECT.IService;
  */
 
 import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.ProductDTO;
+import com.example.SHOP_SELL_CLOTHING_PROJECT.model.APIResponse;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.Product;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,12 +19,12 @@ import java.util.List;
  */
 
 public interface ProductService {
-    Integer createProduct(Product product, String sizes);
-    ProductDTO getProductById(Integer id);
-    List<Product> searchProducts(String searchTerm, Integer categoryId,
+    APIResponse<String> createProduct(ProductDTO productDTO) throws JsonProcessingException;
+    APIResponse<String> getProductById(Integer id) throws JsonProcessingException;
+    APIResponse<String> searchProducts(String searchTerm, Integer categoryId,
                                  BigDecimal minPrice, BigDecimal maxPrice,
-                                 Integer page, Integer pageSize);
-    List<Product> getAvailableProducts(Integer page, Integer pageSize);
-    boolean updateProductStatus(Integer productId, String status);
-    void updateProduct(Product product);
+                                 Integer page, Integer pageSize) throws JsonProcessingException;
+    APIResponse<String> getAvailableProducts(Integer page, Integer pageSize) throws JsonProcessingException;
+    APIResponse<String> updateProductStatus(Integer productId, String status) throws JsonProcessingException;
+    APIResponse<String> updateProduct(Product product) throws JsonProcessingException;
 }

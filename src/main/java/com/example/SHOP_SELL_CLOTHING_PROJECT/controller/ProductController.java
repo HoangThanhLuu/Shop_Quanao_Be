@@ -12,6 +12,7 @@ import com.example.SHOP_SELL_CLOTHING_PROJECT.model.APIResponse;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.ProductDTO;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.Product;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.ProductVariantDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,56 +35,56 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping
-    public ResponseEntity<APIResponse<Integer>> createProduct(@Valid @RequestBody ProductDTO productDTO) {
-        Product product = convertToProduct(productDTO);
-        String sizes = convertVariantsToSizeString(productDTO.getVariants());
-        Integer productId = productService.createProduct(product, sizes);
-        return ResponseEntity.ok(new APIResponse<>(14, "Product created successfully", productId));
+    @PostMapping("/")
+    public ResponseEntity<APIResponse<String>> createProduct(@Valid @RequestBody ProductDTO productDTO) throws JsonProcessingException {
+//        Product product = convertToProduct(productDTO);
+//        String sizes = convertVariantsToSizeString(productDTO.getVariants());
+        APIResponse<String> resultData = productService.createProduct(productDTO);
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<APIResponse<ProductDTO>> getProduct(@PathVariable Integer id) {
-        ProductDTO productDTO = productService.getProductById(id);
-        return ResponseEntity.ok(new APIResponse<>(15, "Product retrieved successfully", productDTO));
+    public ResponseEntity<APIResponse<String>> getProduct(@PathVariable Integer id) throws JsonProcessingException {
+        APIResponse<String> resultData = productService.getProductById(id);
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
-    @GetMapping
-    public ResponseEntity<APIResponse<List<Product>>> searchProducts(
+    @GetMapping("/search")
+    public ResponseEntity<APIResponse<String>> searchProducts(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
-        List<Product> products = productService.searchProducts(search, categoryId, minPrice, maxPrice, page, pageSize);
-        return ResponseEntity.ok(new APIResponse<>(16, "Products retrieved successfully", products));
+            @RequestParam(defaultValue = "10") Integer pageSize) throws JsonProcessingException {
+        APIResponse<String> resultData = productService.searchProducts(search, categoryId, minPrice, maxPrice, page, pageSize);
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
     @GetMapping("/available")
-    public ResponseEntity<APIResponse<List<Product>>> getAvailableProducts(
+    public ResponseEntity<APIResponse<String>> getAvailableProducts(
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
-        List<Product> products = productService.getAvailableProducts(page, pageSize);
-        return ResponseEntity.ok(new APIResponse<>(17, "Available products retrieved successfully", products));
+            @RequestParam(defaultValue = "10") Integer pageSize) throws JsonProcessingException {
+        APIResponse<String> resultData = productService.getAvailableProducts(page, pageSize);
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<Void>> updateProduct(
+    public ResponseEntity<APIResponse<String>> updateProduct(
             @PathVariable Integer id,
-            @Valid @RequestBody ProductDTO productDTO) {
+            @Valid @RequestBody ProductDTO productDTO) throws JsonProcessingException {
         Product product = convertToProduct(productDTO);
         product.setProductId(id);
-        productService.updateProduct(product);
-        return ResponseEntity.ok(new APIResponse<>(18, "Product updated successfully", null));
+        APIResponse<String> resultData = productService.updateProduct(product);
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<APIResponse<Void>> updateProductStatus(
+    public ResponseEntity<APIResponse<String>> updateProductStatus(
             @PathVariable Integer id,
-            @RequestParam String status) {
-        productService.updateProductStatus(id, status);
-        return ResponseEntity.ok(new APIResponse<>(19, "Product status updated successfully", null));
+            @RequestParam String status) throws JsonProcessingException {
+        APIResponse<String> resultData = productService.updateProductStatus(id, status);
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
 
     private Product convertToProduct(ProductDTO productDTO) {

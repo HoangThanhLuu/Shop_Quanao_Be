@@ -15,6 +15,7 @@ import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.*;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.APIResponse;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.Order;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<APIResponse<Integer>> createOrder(
-            @Valid @RequestBody CreateOrderDTO orderDTO) {
+            @Valid @RequestBody CreateOrderDTO orderDTO) throws JsonProcessingException {
         Order order = convertToOrder(orderDTO);
         Integer orderId = orderService.createOrder(order);
         return ResponseEntity.ok(new APIResponse<>(12, "Order created successfully", orderId));
@@ -53,7 +54,7 @@ public class OrderController {
         return ResponseEntity.ok(new APIResponse<>(13, "Payment processed successfully", null));
     }
 
-    private Order convertToOrder(CreateOrderDTO orderDTO) {
+    private Order convertToOrder(CreateOrderDTO orderDTO) throws JsonProcessingException {
         Order order = new Order();
 
         // Set user
@@ -71,10 +72,10 @@ public class OrderController {
         // Calculate total amount from items
         BigDecimal totalAmount = BigDecimal.ZERO;
         for (OrderItemDTO item : orderDTO.getItems()) {
-            ProductDTO productDTO = productService.getProductById(item.getProductId());
-            totalAmount = totalAmount.add(productDTO.getPrice().multiply(
-                    new BigDecimal(item.getQuantity())
-            ));
+//            ProductDTO productDTO = productService.getProductById(item.getProductId());
+//            totalAmount = totalAmount.add(productDTO.getPrice().multiply(
+//                    new BigDecimal(item.getQuantity())
+//            ));
         }
         order.setTotalAmount(totalAmount);
 
