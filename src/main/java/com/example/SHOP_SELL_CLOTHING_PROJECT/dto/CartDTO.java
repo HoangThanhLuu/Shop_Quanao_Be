@@ -20,13 +20,13 @@ import java.math.BigDecimal;
 public class CartDTO {
     private Integer cartItemID;
 
-    @NotNull(message = "Product ID is required")
+//    @NotNull(message = "Product ID is required")
     private Integer productId;
 
     private Integer cartID;
     private Integer userID;
 
-    @NotNull(message = "Variant ID is required")
+//    @NotNull(message = "Variant ID is required")
     private Integer variantId;
 
     @Min(value = 1, message = "Quantity must be at least 1")

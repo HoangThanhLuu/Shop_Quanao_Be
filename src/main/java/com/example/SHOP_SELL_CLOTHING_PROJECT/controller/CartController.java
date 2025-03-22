@@ -47,4 +47,28 @@ public class CartController {
         APIResponse<String> resultData = cartService.getCartItems(userId);
         return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
     }
+
+    @PutMapping("/cart-items/{itemId}")
+    public ResponseEntity<APIResponse<String>> updateQuantityCartItem(@PathVariable Integer itemId, @Valid @RequestBody CartDTO cartDTO) throws JsonProcessingException {
+        APIResponse<String> resultData = cartService.updateQuantityCartItem(itemId, cartDTO.getQuantity());
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
+    }
+
+    @PutMapping("/cart-items/decrease/{itemId}")
+    public ResponseEntity<APIResponse<String>> updateQuantityCartItemDecrease(@PathVariable Integer itemId, @Valid @RequestBody CartDTO cartDTO) throws JsonProcessingException {
+        APIResponse<String> resultData = cartService.updateQuantityCartItemDecrease(itemId, cartDTO.getQuantity());
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
+    }
+
+    @GetMapping("/cart-items/total-item/{itemId}")
+    public ResponseEntity<APIResponse<String>> getTotalCartItem(@PathVariable Integer itemId) throws JsonProcessingException {
+        APIResponse<String> resultData = cartService.getTotalCartItem(itemId);
+        return ResponseEntity.ok(new APIResponse<>(resultData.getCode(), resultData.getMessage(), resultData.getData(), resultData.getResponseType()));
+    }
+
+    @GetMapping("/total/{userId}")
+    public ResponseEntity<APIResponse<String>> getTotalCartItems(@PathVariable Integer userId) throws JsonProcessingException {
+        APIResponse<String> resultData = cartService.getTotalCartItems(userId);
+        return ResponseEntity.ok(resultData);
+    }
 }

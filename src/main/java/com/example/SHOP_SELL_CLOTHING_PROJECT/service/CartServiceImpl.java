@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -104,12 +105,79 @@ public class CartServiceImpl implements CartService {
                     objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) :
                     new APIResponseDTO();
 
-            return new APIResponse<>(
-                    code,
-                    apiResponseDTO.getMessage(),
-                    null,
-                    apiResponseDTO.getResponseType()
+            return new APIResponse<>(code, apiResponseDTO.getMessage(), null, apiResponseDTO.getResponseType());
+        }
+    }
+
+    public APIResponse<String> updateQuantityCartItem(Integer cartItemId, Integer quantity) throws JsonProcessingException {
+        Map<String, Object> result = cartRepository.updateQuantityCartItem(cartItemId, quantity);
+        int code = (Integer) result.get("CODE");
+
+        if (code == 0) {
+            String message = quantity == 0 ? "Item removed from cart successfully" : "Cart item quantity updated successfully";
+            return new APIResponse<>(code, message, null, ResponseType.SUCCESS
             );
+        } else {
+            APIResponse<String> apiResponse = apiResponseServiceImpl.getAPIResponseByCode(code);
+            APIResponseDTO apiResponseDTO = apiResponse != null ?
+                    objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) :
+                    new APIResponseDTO();
+
+            return new APIResponse<>(code, apiResponseDTO.getMessage(), null, apiResponseDTO.getResponseType());
+        }
+    }
+
+    public APIResponse<String> updateQuantityCartItemDecrease(Integer cartItemId, Integer decreaseBy) throws JsonProcessingException {
+        Map<String, Object> result = cartRepository.updateQuantityCartItemDecrease(cartItemId, decreaseBy);
+        int code = (Integer) result.get("CODE");
+
+        if (code == 0) {
+            return new APIResponse<>(code, "Cart item quantity decreased successfully", null, ResponseType.SUCCESS
+            );
+        } else {
+            APIResponse<String> apiResponse = apiResponseServiceImpl.getAPIResponseByCode(code);
+            APIResponseDTO apiResponseDTO = apiResponse != null ?
+                    objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) :
+                    new APIResponseDTO();
+
+            return new APIResponse<>(code, apiResponseDTO.getMessage(), null, apiResponseDTO.getResponseType());
+        }
+    }
+
+    public APIResponse<String> getTotalCartItem(Integer cartItemId) throws JsonProcessingException {
+        Map<String, Object> result = cartRepository.getTotalCartItem(cartItemId);
+        int code = (Integer) result.get("CODE");
+
+        if (code == 0) {
+            BigDecimal totalAmount = (BigDecimal) result.get("TOTAL_AMOUNT");
+            return new APIResponse<>(code, "Cart item total retrieved successfully", objectMapper.writeValueAsString(totalAmount), ResponseType.SUCCESS
+            );
+        } else {
+            APIResponse<String> apiResponse = apiResponseServiceImpl.getAPIResponseByCode(code);
+            APIResponseDTO apiResponseDTO = apiResponse != null ?
+                    objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) :
+                    new APIResponseDTO();
+
+            return new APIResponse<>(code, apiResponseDTO.getMessage(), null, apiResponseDTO.getResponseType());
+        }
+    }
+
+    public APIResponse<String> getTotalCartItems(Integer userId) throws JsonProcessingException {
+        Map<String, Object> result = cartRepository.getTotalCartItems(userId);
+        int code = (Integer) result.get("CODE");
+
+        if (code == 0) {
+            BigDecimal totalAmount = (BigDecimal) result.get("TOTAL_AMOUNT");
+//            log.debug("[CART SERVICE IMPL] totalAmount = {}", totalAmount);
+            return new APIResponse<>(code, "Cart total retrieved successfully", objectMapper.writeValueAsString(totalAmount), ResponseType.SUCCESS
+            );
+        } else {
+            APIResponse<String> apiResponse = apiResponseServiceImpl.getAPIResponseByCode(code);
+            APIResponseDTO apiResponseDTO = apiResponse != null ?
+                    objectMapper.readValue(apiResponse.getData(), APIResponseDTO.class) :
+                    new APIResponseDTO();
+
+            return new APIResponse<>(code, apiResponseDTO.getMessage(), null, apiResponseDTO.getResponseType());
         }
     }
 }

@@ -182,4 +182,160 @@ public class CartRepository {
 
         return cartDTO;
     }
+
+    public Map<String, Object> updateQuantityCartItem(Integer cartItemId, Integer quantity) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            transaction.begin();
+
+            StoredProcedureQuery query = entityManager
+                    .createStoredProcedureQuery("SP_CART_ITEM_QUANTITY_UPDATE")
+                    .registerStoredProcedureParameter("p_CART_ITEM_ID", Integer.class, ParameterMode.IN)
+                    .registerStoredProcedureParameter("p_QUANTITY", Integer.class, ParameterMode.IN)
+                    .registerStoredProcedureParameter("p_CODE", Integer.class, ParameterMode.OUT)
+                    .setParameter("p_CART_ITEM_ID", cartItemId)
+                    .setParameter("p_QUANTITY", quantity);
+
+            query.execute();
+
+            Integer code = (Integer) query.getOutputParameterValue("p_CODE");
+            result.put("CODE", code);
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            result.put("CODE", 1);
+            result.put("ERROR", e.getMessage());
+            log.error("[CART REPOSITORY] Update Cart Item Quantity. ERROR: ", e);
+        } finally {
+            if (entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+
+        return result;
+    }
+
+    public Map<String, Object> updateQuantityCartItemDecrease(Integer cartItemId, Integer decreaseBy) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            transaction.begin();
+
+            StoredProcedureQuery query = entityManager
+                    .createStoredProcedureQuery("SP_CART_ITEM_QUANTITY_DECREASE")
+                    .registerStoredProcedureParameter("p_CART_ITEM_ID", Integer.class, ParameterMode.IN)
+                    .registerStoredProcedureParameter("p_DECREASE_BY", Integer.class, ParameterMode.IN)
+                    .registerStoredProcedureParameter("p_CODE", Integer.class, ParameterMode.OUT)
+                    .setParameter("p_CART_ITEM_ID", cartItemId)
+                    .setParameter("p_DECREASE_BY", decreaseBy);
+
+            query.execute();
+
+            Integer code = (Integer) query.getOutputParameterValue("p_CODE");
+            result.put("CODE", code);
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            result.put("CODE", 1);
+            result.put("ERROR", e.getMessage());
+            log.error("[CART REPOSITORY] Decrease Cart Item Quantity. ERROR: ", e);
+        } finally {
+            if (entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+
+        return result;
+    }
+
+    public Map<String, Object> getTotalCartItem(Integer cartItemId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            transaction.begin();
+
+            StoredProcedureQuery query = entityManager
+                    .createStoredProcedureQuery("SP_CART_ITEM_TOTAL_GET")
+                    .registerStoredProcedureParameter("p_CART_ITEM_ID", Integer.class, ParameterMode.IN)
+                    .registerStoredProcedureParameter("p_CODE", Integer.class, ParameterMode.OUT)
+                    .registerStoredProcedureParameter("p_TOTAL_AMOUNT", BigDecimal.class, ParameterMode.OUT)
+                    .setParameter("p_CART_ITEM_ID", cartItemId);
+
+            query.execute();
+
+            Integer code = (Integer) query.getOutputParameterValue("p_CODE");
+            BigDecimal totalAmount = (BigDecimal) query.getOutputParameterValue("p_TOTAL_AMOUNT");
+
+            result.put("CODE", code);
+            result.put("TOTAL_AMOUNT", totalAmount);
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            result.put("CODE", 1);
+            result.put("ERROR", e.getMessage());
+            log.error("[CART REPOSITORY] Get Cart Item Total. ERROR: ", e);
+        } finally {
+            if (entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+
+        return result;
+    }
+
+    public Map<String, Object> getTotalCartItems(Integer userId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            transaction.begin();
+
+            StoredProcedureQuery query = entityManager
+                    .createStoredProcedureQuery("SP_CART_TOTAL_GET")
+                    .registerStoredProcedureParameter("p_USER_ID", Integer.class, ParameterMode.IN)
+                    .registerStoredProcedureParameter("p_CODE", Integer.class, ParameterMode.OUT)
+                    .registerStoredProcedureParameter("p_TOTAL_AMOUNT", BigDecimal.class, ParameterMode.OUT)
+                    .setParameter("p_USER_ID", userId);
+
+            query.execute();
+
+            Integer code = (Integer) query.getOutputParameterValue("p_CODE");
+            BigDecimal totalAmount = (BigDecimal) query.getOutputParameterValue("p_TOTAL_AMOUNT");
+
+            result.put("CODE", code);
+            result.put("TOTAL_AMOUNT", totalAmount);
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            result.put("CODE", 1);
+            result.put("ERROR", e.getMessage());
+            log.error("[CART REPOSITORY] Get Cart Total. ERROR: ", e);
+        } finally {
+            if (entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+
+        return result;
+    }
 }

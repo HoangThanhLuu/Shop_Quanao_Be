@@ -21,4 +21,8 @@ public interface CartService {
     APIResponse<String> addItemToCart(Integer userId, CartDTO cartDTO) throws JsonProcessingException;
     APIResponse<String> removeItemFromCart(Integer cartItemId) throws JsonProcessingException;
     APIResponse<String> getCartItems(Integer userId) throws JsonProcessingException;
+    APIResponse<String> updateQuantityCartItem(Integer cartItemId, Integer quantity) throws JsonProcessingException;
+    APIResponse<String> updateQuantityCartItemDecrease(Integer cartItemId, Integer decreaseBy) throws JsonProcessingException;
+    APIResponse<String> getTotalCartItem(Integer cartItemId) throws JsonProcessingException;
+    APIResponse<String> getTotalCartItems(Integer userId) throws JsonProcessingException;
 }
