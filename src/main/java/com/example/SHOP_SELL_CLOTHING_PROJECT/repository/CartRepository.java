@@ -134,11 +134,11 @@ public class CartRepository {
 
             query.execute();
 
-            List<?> results = query.getResultList();
             Integer code = (Integer) query.getOutputParameterValue("p_CODE");
 
             List<CartDTO> cartDTOS = null;
-            if (code == 0 && results != null && !results.isEmpty()) {
+            if (code == 0 && query.getResultList() != null && !query.getResultList().isEmpty()) {
+                List<?> results = query.getResultList();
                 cartDTOS = new ArrayList<>();
                 for (Object item : results) {
                     Object[] row = (Object[]) item;
