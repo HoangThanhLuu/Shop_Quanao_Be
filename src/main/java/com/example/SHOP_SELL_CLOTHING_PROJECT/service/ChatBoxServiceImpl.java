@@ -162,7 +162,7 @@ public class ChatBoxServiceImpl implements ChatBoxService {
             return getErrorResponse(botCode);
         }
 
-        Integer botMessageId = (Integer) messageResult.get("BOT_MESSAGE_ID");
+        Integer botMessageId = (Integer) botResult.get("BOT_MESSAGE_ID");
 
 //        Create response DTO
         ChatResponseDTO responseDTO = new ChatResponseDTO(
