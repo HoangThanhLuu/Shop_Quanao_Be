@@ -13,6 +13,7 @@ import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.TicketSupportDTO;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.SupportTicket;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.TicketResponse;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.TicketResponseDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.Order;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.User;
@@ -35,36 +36,38 @@ public class SupportController {
     @Autowired
     private SupportTicketService supportTicketService;
 
-    @PostMapping("/tickets")
-    public ResponseEntity<APIResponse<Integer>> createTicket(
-            @Valid @RequestBody TicketSupportDTO ticketSupportDTO) {
-        SupportTicket ticket = convertToTicketSupport(ticketSupportDTO);
-        Integer ticketId = supportTicketService.createTicket(ticket);
-        return ResponseEntity.ok(new APIResponse<>(20, "Support ticket created successfully", ticketId));
+    @PostMapping("/{userId}/ticket-support")
+    public ResponseEntity<APIResponse<String>> createTicket(
+            @PathVariable Integer userId,
+            @Valid @RequestBody TicketSupportDTO ticketSupportDTO) throws JsonProcessingException {
+//        SupportTicket ticket = convertToTicketSupport(ticketSupportDTO);
+        ticketSupportDTO.setUserId(userId);
+        APIResponse<String> response = supportTicketService.createTicket(ticketSupportDTO);
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/tickets/{ticketId}/responses")
-    public ResponseEntity<APIResponse<Integer>> createResponse(
+    @PostMapping("/{ticketId}/ticket-response")
+    public ResponseEntity<APIResponse<String>> createResponse(
             @PathVariable Integer ticketId,
-            @Valid @RequestBody TicketResponseDTO responseDTO) {
-        TicketResponse response = convertToTicketResponse(responseDTO, ticketId);
-        Integer responseId = supportTicketService.createResponse(response);
-        return ResponseEntity.ok(new APIResponse<>(21, "Response created successfully", responseId));
+            @Valid @RequestBody TicketResponseDTO responseDTO) throws JsonProcessingException {
+//        TicketResponse response = convertToTicketResponse(responseDTO, ticketId);
+        responseDTO.setTicketId(ticketId);
+        APIResponse<String> response = supportTicketService.createResponse(responseDTO);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/tickets")
-    public ResponseEntity<APIResponse<List<SupportTicket>>> getUserTickets() {
-        List<SupportTicket> tickets = supportTicketService.getUserTickets(
-                Integer.parseInt("1"));
-        return ResponseEntity.ok(new APIResponse<>(22, "Tickets retrieved successfully", tickets));
+    @GetMapping("/{userId}/ticket-support")
+    public ResponseEntity<APIResponse<String>> getUserTickets(@PathVariable Integer userId) throws JsonProcessingException {
+        APIResponse<String> response = supportTicketService.getTicketSupports(userId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/tickets/{ticketId}/responses")
-    public ResponseEntity<APIResponse<List<TicketResponse>>> getTicketResponses(
-            @PathVariable Integer ticketId) {
-        List<TicketResponse> responses = supportTicketService.getTicketResponses(ticketId);
-        return ResponseEntity.ok(new APIResponse<>(23, "Responses retrieved successfully", responses));
+    public ResponseEntity<APIResponse<String>> getTicketResponses(@PathVariable Integer ticketId) throws JsonProcessingException {
+        APIResponse<String> response = supportTicketService.getTicketResponses(ticketId);
+        return ResponseEntity.ok(response);
     }
+
     private SupportTicket convertToTicketSupport(TicketSupportDTO ticketDTO) {
         SupportTicket ticket = new SupportTicket();
 

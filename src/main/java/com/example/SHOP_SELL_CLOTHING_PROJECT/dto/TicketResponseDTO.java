@@ -17,8 +17,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TicketResponseDTO {
     private Integer responseId;
+
+    private Integer ticketId;
+
+    private Integer userId;
+
     private String message;
-    private String userName;
-    private Boolean isAdmin;
+
     private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    private String userName;
+
+    private Boolean isAdmin;
 }

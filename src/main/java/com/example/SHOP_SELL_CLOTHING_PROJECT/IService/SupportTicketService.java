@@ -6,8 +6,12 @@ package com.example.SHOP_SELL_CLOTHING_PROJECT.IService;
  * Time: 11:25 PM
  */
 
+import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.TicketResponseDTO;
+import com.example.SHOP_SELL_CLOTHING_PROJECT.dto.TicketSupportDTO;
+import com.example.SHOP_SELL_CLOTHING_PROJECT.model.APIResponse;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.SupportTicket;
 import com.example.SHOP_SELL_CLOTHING_PROJECT.model.TicketResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;
 
@@ -16,8 +20,8 @@ import java.util.List;
  */
 
 public interface SupportTicketService {
-    Integer createTicket(SupportTicket ticket);
-    Integer createResponse(TicketResponse response);
-    List<SupportTicket> getUserTickets(Integer userId);
-    List<TicketResponse> getTicketResponses(Integer ticketId);
+    APIResponse<String> createTicket(TicketSupportDTO ticketSupportDTO) throws JsonProcessingException;
+    APIResponse<String> createResponse(TicketResponseDTO responseDTO) throws JsonProcessingException;
+    APIResponse<String> getTicketSupports(Integer userId) throws JsonProcessingException;
+    APIResponse<String> getTicketResponses(Integer ticketSupportId) throws JsonProcessingException;
 }

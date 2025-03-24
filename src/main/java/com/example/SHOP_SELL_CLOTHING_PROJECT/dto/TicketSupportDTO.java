@@ -6,6 +6,8 @@ package com.example.SHOP_SELL_CLOTHING_PROJECT.dto;
  * Time: 1:23 PM
  */
 
+import com.example.SHOP_SELL_CLOTHING_PROJECT.ENUM.OrderStatus;
+import com.example.SHOP_SELL_CLOTHING_PROJECT.ENUM.TicketStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,18 +27,22 @@ public class TicketSupportDTO {
     // Ticket fields
     private Integer ticketId;
 
-    @NotBlank(message = "Subject is required")
-    private String subject;
-
-    @NotBlank(message = "Message is required")
-    private String message;
+    private Integer userId;
 
     private Integer orderId;
 
-    // Response fields
-    private Integer responseId;
-    private Integer userId;
+//    @NotBlank(message = "Subject is required")
+    private String subject;
+
+//    @NotBlank(message = "Message is required")
+    private String message;
+
+    private TicketStatus status;
+
+    private OrderStatus orderStatus;
+
     private LocalDateTime createdAt;
-    private List<TicketResponseDTO> responses;
+
+    private LocalDateTime updateAt;
 }
 
